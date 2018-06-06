@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<!--<link rel="stylesheet" href="../../css/style.css" />-->
+		<style>
+			.mui-table-view {
+				margin-bottom: 50px;
+			}
+			
+			.menu img {
+				width: 24px;
+				vertical-align: middle;
+				margin-right: 13px;
+			}
+			.mui-table-view .mui-media-object{
+				max-width: 65px;
+			}
+			#head-img {
+				width: 65px;
+				height: 65px;
+				border-radius: 50%;
+				vertical-align: middle;
+			}
+			
+			#head-img~.mui-media-body {
+				height: 67px;
+				padding-top: 10px;
+			}
+			.font18{
+				font-size: 18px;
+				color: #000000;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div id="mine" class="mui-content">
+			<ul class="mui-table-view mui-table-view-chevron">
+				<li class="mui-table-view-cell mui-media">
+					<a class="mui-navigate-right">
+						<div >
+							<img class="mui-media-object mui-pull-left head-img" id="head-img" src="../../img/mao.gif" />
+							<div class="mui-media-body">
+								<p class='font18' style="line-height:50px;">三脚猫</p>
+							</div>
+						</div>
+					</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view mui-table-view-chevron menu">
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" @tap="gotoDetail('my_waveform')">
+						<img src="../../img/mine/my_wave.png">
+						<span class="font16">我的声波</span>
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" @tap="gotoDetail('my_tattoo')">
+						<img src="../../img/mine/my_tattoo.png">
+						<span class="font16">我的纹身</span>
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" @tap="gotoDetail('my_order')">
+						<img src="../../img/mine/my_order.png ">
+						<span class="font16">我的订单</span>
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" @tap="gotoDetail('my_contract')">
+						<img src="../../img/mine/my_sign.png">
+						<span class="font16">我的签约</span>
+					</a>
+				</li>
+			</ul>
+
+			<ul class="mui-table-view mui-table-view-chevron menu">
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" @tap="onlineGM()">
+						<img src="../../img/mine/online_gm.png" />
+						<span class="font16">在线客服</span>
+					</a>
+				</li>
+			</ul>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/app.js"></script>
+		<script>
+			new Vue({
+				el: '#mine',
+				data: {
+					test:1
+				},
+				mounted:function() {
+					mui.init();
+				},
+				methods: {
+					gotoDetail:function(pageName){
+						app.openNewPage("../mine/" + pageName);
+					}
+				}
+			})
+		</script>
+
+	</body>
+
+</html>

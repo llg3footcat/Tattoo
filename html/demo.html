@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的签约</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/style.css" />
+		<style>
+			h5 {
+				color: #FFFFFF;
+			}
+			
+			.mui-content {
+				width: 100%;
+				height: 100%;
+				background-color: #f1f3f5;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">我的签约</h1>
+		</header>
+
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/app.js"></script>
+
+		<script>
+			new Vue({
+				el: '#myWaveform',
+				data: {
+					waveformList: [ //任务中
+						{
+							id: 1,
+							waveformName: '101',
+							createTime: '2017-9-30',
+							audioImg: "../../img/1.png"
+						},
+					],
+					test: 1
+				},
+				mounted: function() {
+					mui.init();
+				},
+				methods: {
+					gotoTemplate: function() {
+						app.openNewPage("../record/waveform_template", {})
+					}
+				}
+			})
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="stylesheet" href="../../css/mui.min.css">
+<link rel="stylesheet" href="../../css/style.css" />
+<title>录音</title>
+<style type="text/css">
+	#imgBox {
+		height: 210px;
+		width: 100%;
+		margin: 0px auto;
+		background-color: #FFFFFF;
+	}
+</style>
+</head>
+
+<body>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 class="mui-title">录音</h1>
+	</header>
+	<div id="record" class="mui-content">
+		<div id="imgBox">
+			<img id="userImage_id" />
+		</div>
+		<div class="mui-content-padded">
+			<!--<img id="btn_play" src="../../img/record/btn_play.png" width=10% style="vertical-align:middle;">-->
+			<label id="rtime">{{label_time}}</label>
+		</div>
+		<div  style="text-align:center;position: fixed;width: 100%; bottom: 10%; border: green solid 0px">
+			<img id="btn_record" @click="startRecord(is_recording)" src="../../img/record/btn_record_start.png" width=25%;/>
+			<img id="btn_upload" @click="showPrompt()" v-show="is_show_upload" style="position:absolute;bottom: 10%;right: 20%;" src="../../img/record/btn_complet.png" width=15%;/>
+		</div>
+		<div id="output">
+		</div>
+	</div>
+
+<script src="../../js/mui.min.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/app.js"></script>
+<script src="../../js/vue.js"></script>
+
+<script type="text/javascript">
+	new Vue({
+		el: '#record',
+		data: function() {
+			return {
+				label_time :"00:00:00",
+				is_recording:false,
+				is_show_upload:false,
+				current_time:0,
+				record_index:0,
+				record_file_name:app.RECORD_TEMP_NAME,
+				record_interval:null,
+				record_handle:null
+			}
+		},
+		mounted: function() {
+			mui.init();
+			mui.plusReady(function() {})
+		},
+		methods: {
+			startRecord: function() {
+				// 开始录音
+				if (this.is_recording){
+					this.stopRecord();
+					return;
+				}
+				this.is_recording = true;
+				this.is_show_upload = false;
+				btn_record.src = this.getImageUrlByName("btn_record_end");
+				outSet('开始录音：' + this.record_file_name);
+				
+				this.record_handle = plus.audio.getRecorder();
+				if(this.record_handle == null) {
+					outLine('录音对象未获取 ');
+					return;
+				}
+				this.record_handle.record({
+					filename: this.record_file_name,
+					format: "amr"
+				}, function(p) {
+					outLine('录音完成：' + p);
+				}, function(e) {
+					outLine('录音失败：' + e.message);
+				});
+				this.current_time = 0;
+				
+				let self =  this;
+				this.record_interval = setInterval(function() {
+					self.current_time++;
+					self.label_time = timeToStr(self.current_time);
+					console.log(self.label_time)
+					// 超过30秒，停止录音
+					if(self.current_time > app.RECORD_LIMIT_TIME) {
+						self.stopRecord();
+					}
+				}, 1000);
+			},
+			// 结束录音
+			stopRecord: function() {
+				btn_record.src = this.getImageUrlByName("btn_record_start");
+				this.is_recording = false;
+				this.is_show_upload = true;
+				this.label_time = '00:00:00';
+				clearInterval(this.record_interval);
+				this.record_interval = null;
+				this.record_handle.stop();
+				this.record_handle = null;
+				this.current_time = 0;
+			},
+			showPrompt: function() {
+				outSet("弹出系统输入对话框：");
+				var bts = ["取消", "上传"];
+				var that = this;
+				plus.nativeUI.prompt("给你的录音起个名字吧", function(e){
+					console.log("e")
+					var i = e.index;
+					if(i == 1) {
+						that.createUploadTask(e.value); 
+					}
+					outLine("按\"" + ((i >= 0) ? bts[e.index] : "返回") + "\"关闭：" + e.value);
+				}, "录音命名", "名字3-10个字符", bts);
+			},
+			// 获取图片url
+			getImageUrlByName: function(name) {
+				return "../../img/record/" + name + ".png";
+			},
+			// 创建上传任务
+			createUploadTask: function(wave_name) {
+				let uploadInfo = {
+					audio_name:wave_name,
+					file_name:app.RECORD_TEMP_NAME,
+				}
+				app.uploadAudio(app.urls.upload_audio, uploadInfo, function(data) {
+					app.openNewPage("record_edit", data);
+				})
+			}
+		}
+	})
+</script>
+</body>
+
+</html>

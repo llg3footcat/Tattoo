@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>声波模板</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/style.css" />
+		<style>
+			#imgBox img{
+				height: 210px;
+				width: 100%;
+				vertical-align:middle;
+				background-color: #FFFFFF;
+			}
+			
+			.btn-common {
+				width: 80%;
+				margin: 30px auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">声波模板</h1>
+		</header>
+		<div id="template" class="mui-content">
+			<div id="imgBox">
+				<img  :src="template_image_url " />
+			</div>
+			<div>
+				<button type="button" @tap="downloadTemplate()" class="mui-btn  mui-btn-block btn-common">下载模板</button>
+				<button type="button" @tap="gotoRecordEdit()" class="mui-btn  mui-btn-block btn-common">编辑声波</button>
+				<button type="button" @tap="gotoFindTattooist()" class="mui-btn mui-btn-blue mui-btn-block btn-common">联系纹身师</button>
+			</div>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/vue.js"></script>
+		<script src="../../js/app.js"></script>
+		<script>
+			new Vue({
+				el: '#template',
+				data: {
+					template_image_url: "../../img/mao.gif",
+					pdf_path_url:"",
+					marker_data:"",
+				},
+				mounted: function() {
+					mui.init();
+					this.marker_data = app.getMarker();
+					console.log("this.marker_data: "+this.marker_data.id);
+					this.template_image_url =  app.RES_HOST + this.marker_data.audio_image_url;
+					this.pdf_path_url = app.RES_HOST + this.marker_data.pdf_path_url;
+					mui.plusReady(()=> {
+					});
+					//返回键退出当前页
+	                var old_back = mui.back;
+	                mui.back = function(){
+	                    mui.currentWebview.close();
+	                    old_back();
+	                }
+				},
+				methods: {
+					downloadTemplate: ()=> {
+						console.log("下载模板： " + this.pdf_path_url);
+					},
+					gotoRecordEdit: ()=> {
+						app.openNewPage("../record/record_edit");
+					},
+					gotoFindTattooist: function() {
+						app.openNewPage("../tattooist/tattooist_list");
+					},
+				}
+			})
+		</script>
+
+	</body>
+
+</html>

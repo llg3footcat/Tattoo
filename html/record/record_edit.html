@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<link rel="stylesheet" href="../../css/mui.min.css">
+<link rel="stylesheet" href="../../css/style.css" />
+<link rel="stylesheet" type="text/css" href="../../js/plugins/cropper/css/cropper.min.css" />
+<title>录音</title>
+<style type="text/css">
+#waveBg {
+	height: 210px;
+	width: 100%;
+	position: fixed;
+	margin: 0px auto;
+	background-color: #FFFFFF;
+}
+
+#imgBox {
+	height: 210px;
+	width: 90%;
+	margin: 0px auto;
+	background-color: #FFFF00;
+}
+
+.cropper-bg {
+	background-image: none;
+	background-color: #FFFFFF;
+}
+
+.cropper-modal {
+	background-color: #FFFFFF;
+	opacity: .5;
+}
+
+.mui-content-padded {
+	margin: 15px;
+}
+
+.l {
+	width: 5px;
+	height: 210px;
+	background: #FFFF00;
+}
+</style>
+</head>
+
+<body>
+<header class="mui-bar mui-bar-nav">
+<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+<h1 class="mui-title">录音编辑</h1>
+</header>
+<div class="mui-content" id="record_edit">
+<div id="waveBg"></div>
+<div id="imgBox">
+	<img id="userImage_id"/>
+</div>
+<div id="wave_progress">
+	<p style="height: 2px;"></p>
+</div>
+<div id="play" class="mui-content-padded">
+	<label>拖动蓝色边缘对波形进行裁剪</label>
+	<button type="button" @tap="fetchAjustAudioData('trim_audio')" class="mui-btn mui-btn-blue mui-pull-right">裁剪</button>
+</div>
+
+<div id="play" class="mui-content-padded">
+	<img @tap="startPlay()" v-if="is_playing==false" src="../../img/record/btn_play.png" width=12% style="vertical-align:middle;" />
+	<img @tap="stopPlay()"  v-if="is_playing==true" src="../../img/record/btn_play_stop.png" width=12% style="vertical-align:middle;" />
+	<label style="font-size: 18px;padding-left: 5px;">{{play_time}}/{{audio_total_time}}</label>
+</div>
+<div class="mui-content-padded" style="margin-top: 5%;">
+	<img src="../../img/record/name_edit.png" width=6% style="vertical-align:middle;" />
+	<label id="wave_name">{{marker_obj.name}}</label>
+	<button type="button" @tap="fetchAjustAudioData('rename_audio')" class="mui-btn mui-btn-blue mui-btn-outlined">改名</button>
+</div>
+<div class="mui-content-padded" style="margin-top: 5%;">
+	<img src="../../img/record/wave_cut.png" width=6% style="vertical-align:middle;" />
+	<label>缩放(改变波形的宽高)</label>
+</div>
+
+<div class="mui-input-row mui-input-range mui-content-padded">
+	<label>宽度：</label>
+	<input type="range" id='range-width' value="100" min="80" max="120" />
+</div>
+<div class="mui-input-row mui-input-range mui-content-padded">
+	<label>高度：</label>
+	<input type="range" id='range-height' value="100" min="80" max="120" />
+</div>
+
+<div class="mui-content-padded" style="padding: 40px;margin-top: 10%;">
+	<button id="go_next" @tap="createTemplate()" type="button" class="mui-btn mui-btn-primary mui-btn-block">下一步 ></button>
+
+	<!--<div id="output">
+	</div>-->
+</div>
+<script src="../../js/mui.min.js"></script>
+<script src="../../js/vue.js"></script>
+<script src="../../js/app.js"></script>
+<script src="../../js/common.js"></script>
+<script src="../../js/plugins/jquery-3.1.1.slim.min.js"></script>
+<script src="../../js/plugins/cropper/js/cropper.min.js"></script>
+<script>
+	new Vue({
+		el: '#record_edit',
+		data: {
+			marker_obj: {
+				id: 1,
+				name: '123',
+				pdf_path_url: '',
+				audio_image_url: '../../img/1.png',
+				tattoo_image_url: '',
+				audio_obj: {
+					id: 1,
+					ogg_path_url: '',
+					amr_path_url: '',
+					duration: 4.36,
+					create_time: "2018-05-31 10:35:38",
+				},
+			},
+			user_obj: {
+
+			},
+			play_time: '00:00:00',
+			audio_total_time: '00:00:00',
+			is_playing: false,
+			audio_name: app.RECORD_TEMP_NAME,
+			playHandle: null,
+			pi: null,
+			image_width_radio:1,
+			image_height_radio:1,
+		},
+		mounted: function() {
+			mui.init({
+				gestureConfig: {
+					tap: true, //默认为true
+					doubletap: true, //默认为false
+					longtap: true, //默认为false
+					swipe: true, //默认为true
+					drag: true, //默认为true
+					hold: true, //默认为false，不监听
+					release: true //默认为false，不监听
+				}
+			});
+			// 初始化裁剪
+			this.initImageCropper();
+			
+			mui.plusReady(() => { 				
+			});
+			
+			this.initData();
+			
+			var _self = this;
+			mui(".mui-input-row").on('release','input',function(){
+			  // 修改宽高
+			  console.log("id" + this.value);
+			  if (this.getAttribute("id") == "range-width"){
+			  	_self.image_width_radio = this.value/100;
+			  }else{
+			  	_self.image_height_radio = this.value/100;
+			  }
+			  _self.fetchAjustAudioData("adjust_image");
+			});
+		},
+		methods: {
+			initData:function()  {
+				this.marker_obj = app.getMarker();
+//				console.log("初始化数据"+JSON.stringify(data));
+//				this.marker_obj = data.marker_obj;
+				console.log("that.marker_obj.audio_obj.duration " + this.marker_obj.audio_obj.duration);
+				this.audio_total_time = timeToStr(this.marker_obj.audio_obj.duration)
+				this.image_width_radio=1,
+				this.image_height_radio=1,
+				this.createDownload();
+				this.loadImage();
+			},
+			startPlay: function() {
+				mui("#wave_progress p").progressbar({
+					progress: 0
+				}).show();
+				console.log("开始播放声音", this.playHandle)
+				this.is_playing = true;
+				this.playHandle = plus.audio.createPlayer(this.audio_name);
+				this.playHandle.play(()=>{
+					outLine('播放完成！');
+					mui("#wave_progress p").progressbar().setProgress(100);
+					mui("#wave_progress p").progressbar().hide();
+					// 播放完成
+					this.play_time = this.audio_total_time;
+					this.stopPlay();
+				}, function(e) {
+					outLine('播放音频文件"' + '"失败：' + e.message);
+				});
+				this.pi = setInterval(()=>{
+					var c = this.playHandle.getPosition();
+					if(!c) { // 兼容无法及时获取当前播放位置的情况
+						return;
+					}
+					mui("#wave_progress p").progressbar().setProgress(c /this.marker_obj.audio_obj.duration * 100);
+					this.play_time = timeToStr(c);
+				}, 1000);
+			},
+			stopPlay: function()  {
+				this.is_playing = false;
+				clearInterval(this.pi);
+				this.pi = null;
+				setTimeout(this.resetPlay, 500);
+				// 操作播放对象
+				if(this.playHandle) {
+					this.playHandle.stop();
+					this.playHandle = null;
+				}
+			},
+			// 重置播放页面内容
+			resetPlay: function() {
+//				label_time = '00:00:00/00:00:00';
+				this.play_time = '00:00:00';
+			},
+			// 创建下载任务 下载音频
+			createDownload: function() {
+				var audio_url = app.RES_HOST + this.marker_obj.audio_obj.amr_path_url;
+				app.downloadTask(audio_url, this.audio_name, function(download) {
+					console.log('下载音频完成: ' + download.filename); 
+				})
+			},
+			// 裁剪组件
+			initImageCropper: function() {
+				//初始化组件
+				$("#userImage_id").cropper({
+					viewMode: 3,
+					//		aspectRatio:1 ,// 裁剪框宽高比  这个不设置
+					autoCropArea: 1, //定义自动裁剪面积大小(百分比)和图片进行对比。
+					dragMode: "none", //设置移动图片、重新绘制选图区域
+					movable: false, //是否允许移动图片
+					cropBoxMovable: true, //是否允许移动裁剪框
+					cropBoxResizable: true, // 裁剪框大小是否可调整
+					zoomable: false, //是否允许放大图片
+					guides: true, //取消显示裁切线中间的虚线网格
+					background: false, // 马赛克背景
+					minContainerWidth: 200,
+					minContainerHeight: 210,
+					minCanvasWidth: 200,
+					minCanvasHeight: 210,
+					minCropBoxHeight: 210,
+					minCropBoxWidth: 100,
+				});
+			},
+			//确定选择图片
+			loadImage: function() {
+				var path = app.RES_HOST + this.marker_obj.audio_image_url;
+				console.log("选择图片:", path)
+				var img = document.getElementById("userImage_id");
+				img.src = path;
+				if(window.imageDisable == true) {
+					$("#userImage_id").cropper("enable");
+				}
+				$("#userImage_id").cropper("replace", path);
+				//启用几个功能按钮
+				//				$("button.toolbutton").prop("disabled", false);
+				document.getElementById("userImage_id").onclick = function() {
+					plus.runtime.openFile(path);
+				}
+			},
+			// 获取调整的音频数据 (裁剪，缩放，改名)
+			fetchAjustAudioData: function(ajustType) {
+				// 通用数据
+				var adjustData = {
+					opt : ajustType,
+					marker_id : this.marker_obj.id
+				};
+				if (ajustType == "adjust_image"){
+					//调整图片尺寸
+					adjustData.image_width = this.image_width_radio;
+					adjustData.image_height = this.image_height_radio;
+				}else if (ajustType == "rename_audio"){
+					// 修改名称
+					adjustData.audio_name= this.marker_obj.name + "***";
+				}else if (ajustType == "trim_audio"){
+					// 裁剪图片大小
+					var  audioTime = this.marker_obj.audio_obj.duration;
+					if(isNaN(audioTime)) return;
+					var cropData = $("#userImage_id").cropper('getData');
+					var start_time = (audioTime * (cropData.x / this.marker_obj.audio_image_width));
+					var duration_time = (audioTime * ((cropData.width) / this.marker_obj.audio_image_width));
+					adjustData.audio_start = timeToStrFloat(start_time.toFixed(2));
+					adjustData.audio_duration = timeToStrFloat(duration_time.toFixed(2));
+				}
+				console.log("请求参数",JSON.stringify(adjustData))
+				app.ajustAuidoData(app.urls.adjust_audio,adjustData,(data)=>{
+						this.initData(data.result);
+				})
+			},
+			createTemplate:function(){
+				mui.toast("模板生成中")
+				app.createTempate(app.urls.create_template,{marker_id : this.marker_obj.id},function(result){
+					app.openNewPage("waveform_template",result);
+				})
+			}
+		}
+	})
+</script>
+</body>
+
+</html>

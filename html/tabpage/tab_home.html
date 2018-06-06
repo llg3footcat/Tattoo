@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<title>首页</title>
+		<style type="text/css">
+			body {
+				/*background: #e1e4ea;*/
+			}
+			.mui-content-padded {
+                margin-top: 15px;
+                margin-left: 0px;
+            }
+		</style>
+	</head>
+	<body>
+			<div class="mui-content">
+			<!--轮播图-->
+			<div id="slider" class="mui-slider">
+				<div class="mui-slider-group mui-slider-loop">
+					<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+					<div class="mui-slider-item mui-slider-item-duplicate">
+						<a href="#">
+							<img src="../../img/home/banner_1.jpg">
+						</a>
+					</div>
+				</div>
+				<div class="mui-slider-indicator">
+					<div class="mui-indicator mui-active"></div>
+				</div>
+			</div>
+
+			<div class="mui-card" style="margin-top: 40px">
+				<ul class="mui-table-view ">
+					<li id = "record" class="mui-table-view-cell mui-media ">
+						<a class="mui-navigate-right" href="javascript:;">
+							<img class="mui-pull-left mui-content-padded" src="../../img/home/list_create.png" style="width: 25%;margin-top: 10px;">
+							<div class="mui-media-body " style="margin-top: 10px">
+								<h4 class="mui-content-padded"> 创建声波</h4>
+								<h5 class="mui-ellipsis-2 mui-content-padded">上传30秒以内的音频，视频格式amr</h5>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+			
+			<div class="mui-card" style="margin-top:30px;">
+				<ul class="mui-table-view ">
+					<li id="find" class="mui-table-view-cell mui-media ">
+						<a class="mui-navigate-right" href="javascript:;">
+							<img class="mui-pull-left mui-content-padded" src="../../img/home/list_find.png" style="width: 25%;margin-top: 10px;">
+							<div class="mui-media-body ">
+								<h4 class="mui-content-padded"> 寻找纹身师</h4>
+								<h5 class="mui-ellipsis-2 mui-content-padded">在我们培训的纹身艺术家目录中寻找一个</h5>
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/app.js"></script>
+		<script type="text/javascript">
+			//mui初始化
+			mui.init();
+			mui.plusReady(function() {
+				plus.navigator.setStatusBarBackground("#1b212e");
+			})
+		 mui(".mui-table-view").on('tap','.mui-table-view-cell',function(){
+		 	console.log()
+//			  //获取id
+			  var id = this.getAttribute("id");
+			  if (id == "record"){
+			  	app.openNewPage("../record/record");
+			  }else if(id == "find"){
+		  		app.openNewPage("../artist/artist_list");
+			  }
+			  //传值给详情页面，通知加载新数据
+//			  mui.fire(detail,'getDetail',{id:id});
+		}) 
+		</script>
+	</body>
+</html>

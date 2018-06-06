@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的上传</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/style.css" />
+		<style>
+			h5 {
+				color: #FFFFFF;
+			}
+			
+			.mui-content {
+				width: 100%;
+				height: 100%;
+				background-color: #f1f3f5;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">用户纹身</h1>
+		</header>
+
+		<div id="my_upload" class="mui-content">
+			<div class="mui-content-padded">
+				<img class="mui-media-object mui-pull-left img-avatar" :src="order_obj.customer_obj.avatar ">
+				<span class="font14 " style="color: #000000;line-height: 40px; ">{{order_obj.customer_obj.username}}</span>
+				<h4 style="color: #000000 ">{{order_obj.marker_obj.name}}</h4>
+			</div>
+
+			<div class="mui-card ">
+				<img :src="audio_image_url" width="100% " height="210px " />
+			</div>
+			<div class="mui-card ">
+				<img :src="tattoo_image_url" width="100% " height="210px " />
+			</div>
+
+			<div id="upload " class="btn-fix-bottom " v-if="order_obj.status==1">
+				<button class="mui-btn mui-btn-blue" @tap="uploadPic()">上传图片</button>
+			</div>
+		</div>
+
+		<script src="../../js/mui.min.js "></script>
+		<script src="../../js/vue.js "></script>
+		<script src="../../js/app.js "></script>
+
+		<script>
+			Vue.config.productionTip = false
+			new Vue({
+				el: '#my_upload',
+				data: {
+					upload_pic_name: app.PIC_TEMP_NAME,
+					audio_image_url: "../../img/mao.gif ",
+					tattoo_image_url: " ",
+					order_obj: {
+						customer_obj: {
+							username: "三脚猫 ",
+							avatar: "",
+						},
+						marker_obj: {
+							name: "123 ",
+						},
+						id: 1,
+						status: 1,
+						createTime: '2017-9-30',
+					},
+				},
+				mounted: function() {
+					mui.init();
+					
+					this.getOrderData();
+
+					//返回键退出当前页
+					var old_back = mui.back;
+					mui.back = function() {
+						mui.currentWebview.close();
+						old_back();
+					}
+				},
+				methods: {
+					getOrderData:function() {
+						this.order_obj = app.getOrder();
+						this.audio_image_url = app.RES_HOST + this.order_obj.marker_obj.audio_image_url;
+						this.tattoo_image_url = app.RES_HOST + this.order_obj.marker_obj.tattoo_image_url;
+					},
+					
+					uploadPic: function() {
+						// 拍照
+						var cmr = plus.camera.getCamera();
+						cmr.captureImage((p) => {
+							var uploadInfo = {
+								orders_id: this.order_obj.id,
+								file_name: this.upload_pic_name,
+							}
+							console.log('拍照成功：' + JSON.stringify(uploadInfo));
+							app.uploadPic(app.urls.upload_tatoo,uploadInfo,() => {
+								this.getOrderData();
+							})
+						}, function(e) {
+							console.log('失败：' + e.message);
+						}, {
+							filename: this.upload_pic_name,
+							index: 1 // 主摄像头
+						});
+					}
+				}
+			})
+		</script>
+	</body>
+
+</html>

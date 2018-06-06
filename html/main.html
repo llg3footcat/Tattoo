@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>主页面</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/style.css" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav"  >
+			<h1 class="mui-title">声波纹身</h1>
+		</header>
+		<nav class="mui-bar mui-bar-tab ">
+			<a id="defaultTab" class="mui-tab-item mui-active" href="tabpage/tab_home.html">
+				<img class="mui-icon" src="../img/home/tab_home.png" />
+			</a>
+			<a class="mui-tab-item" href="tabpage/tab_scan.html">
+				<img class="mui-icon" src="../img/home/tab_scan.png" />
+			</a>
+			<a class="mui-tab-item" href="tabpage/tab_mine.html">
+				<img class="mui-icon" src="../img/home/tab_my.png" />
+			</a>
+		</nav>
+	
+		<script src="../js/mui.min.js"></script>
+		<script src="../js/common.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			 //mui初始化
+			mui.init();
+			var subpages = ['tabpage/tab_home.html', 'tabpage/tab_scan.html', 'tabpage/tab_mine.html'];
+			var subpages_title = ["声波纹身","扫描","我的"];
+			var subpage_style = {
+				top: '44px',
+				bottom: '51px'
+			};
+			//当前激活选项
+			var activeTab = null;
+
+			//创建子页面，首个选项卡页面显示，其它均隐藏；
+			mui.plusReady(function() {
+				plus.navigator.setStatusBarBackground("#1b212e");
+			});
+			
+			//选项卡点击事件
+			mui('.mui-bar-tab').on('tap', 'a', function(e) {
+				// 获取当前点击的选项
+				var targetTab = this.getAttribute('href');
+				
+				if (targetTab == activeTab){
+					return;
+				}
+				if (targetTab == subpages[1]){
+					// NewViewController为应用内创建的原生的ViewController类名,所调用页面的内容需要在原生代码中完成
+					var newVCobj = plus.ios.newObject("EnterUnityViewController");
+					var UIApplicationClass = plus.ios.importClass("UIApplication");
+					var UIAppObj = UIApplicationClass.sharedApplication();
+					var del = plus.ios.invoke(UIAppObj,"delegate");
+					// 如果当前应用delegate对象包含UIWindow对象并且变量名命名为“window”可以这么写，
+					// 否则需要根据实际代码情况修改
+					// 应用的delegate对象也可以添加一个返回UIViewController的方法
+					var appWindowObj = plus.ios.invoke(del,"window");
+					var appRootController = plus.ios.invoke(appWindowObj,"rootViewController");
+					plus.ios.invoke(appRootController,"presentViewController:animated:completion:",newVCobj,"YES",null);
+					mui.toast("调用扫描界面");
+					return;
+				}
+				// 获取图标对象
+				var targetIcon = mui(this.children[0])[0];
+				// 初始化
+				mui('.mui-bar-tab .mui-tab-item img').each(function(index, item) {
+					var itemSrc = item.getAttribute('src');
+					if(itemSrc.indexOf('active')) {
+						item.src = itemSrc.replace('_select.png', '.png');
+					}
+				});
+				// 设置当前的图标
+				targetIcon.src = targetIcon.getAttribute('src').replace('.png', '_select.png');
+
+				if(!plus.webview.getWebviewById(targetTab)){
+					var sub = plus.webview.create(targetTab, targetTab, subpage_style);
+					sub.setBounce({position:{top:"100px"},changeoffset:{top:"0px"}});
+					plus.webview.currentWebview().append(sub);
+					plus.webview.show(sub,'pop-in',300);	
+				}else{
+					//显示目标选项卡
+					plus.webview.show(targetTab);
+				}	
+				
+				//隐藏当前;
+				plus.webview.hide(activeTab);
+				//更改当前活跃的选项卡
+				activeTab = targetTab;
+			});
+			
+			// 默认选中第一个tab
+			var defaultTab = document.getElementById("defaultTab");
+			mui.trigger(defaultTab, 'tap');
+		</script>
+	</body>
+
+</html>
