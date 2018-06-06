@@ -268,18 +268,19 @@
 			},
 			"html/main.html": {
 				"resources": [
-					"html/tabpage/tab_scan.html"
+					"html/tabpage/tab_scan.html",
+					"html/tabpage/tab_home.html"
 				],
 				"refer": [
-					"html/tabpage/tab_mine.html",
-					"html/tabpage/tab_home.html"
+					"html/tabpage/tab_mine.html"
 				],
 				"priority": 0
 			},
 			"html/tabpage/tab_home.html": {
 				"resources": [],
 				"refer": [
-					"html/record/record.html"
+					"html/record/record.html",
+					"html/artist/artist_list.html"
 				],
 				"priority": 0
 			},
@@ -287,6 +288,28 @@
 				"resources": [],
 				"refer": [
 					"html/record/record_edit.html"
+				],
+				"priority": 0
+			},
+			"html/tabpage/tab_mine.html": {
+				"resources": [],
+				"refer": [
+					"html/mine/my_waveform.html",
+					"html/mine/my_order.html"
+				],
+				"priority": 0
+			},
+			"html/artist/artist_list.html": {
+				"resources": [],
+				"refer": [
+					"html/artist/artist_detail.html"
+				],
+				"priority": 0
+			},
+			"html/mine/my_order.html": {
+				"resources": [],
+				"refer": [
+					"html/mine/my_upload.html"
 				],
 				"priority": 0
 			}

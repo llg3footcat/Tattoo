@@ -49,14 +49,33 @@
 						declaration: "test",
 						location: "100km",
 					},
+					orders_obj:{
+						
+					}
 				},
 				mounted: function() {
 					mui.init();
 				},
 				methods: {
+					getArtist:function(){
+						var artist_obj = app.getArtistList();
+						var url = app.urls.get_artist;
+						var requestData = {artist_id:artist_obj.id};
+						app.commonRequest(url,requestData,(data) => { 
+							this.artist_obj = data.artist_obj;
+						})
+					},
 					// 预定
 					preorder: function() {
-						preorder
+						var url = app.urls.preorder;
+						var requestData = {
+							artist_id: this.artist_obj.id,
+							marker_id:160,
+						};
+						app.commonRequest(url,requestData,(data) => { 
+							console.log("预约成功");
+							this.orders_obj = data.orders_obj;
+						})
 					}
 				}
 			})

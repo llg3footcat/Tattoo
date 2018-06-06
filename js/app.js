@@ -164,7 +164,6 @@
 	// 通用请求
 	owner.commonRequest = function(url, data, callback) {
 		data.identity = identity;
-		console.log("data:"+JSON.stringify(data) + " "+app.getApiUrl(url))
 		$.ajax({
 			url: url,
 			dataType: 'json', //服务器返回json格式数据  
@@ -248,6 +247,17 @@
 	owner.getOrder = function() {
 		var order_obj = localStorage.getItem('_order_') || "{}";
 		return JSON.parse(order_obj);
+	}
+	
+	// 设置艺术家
+	owner.setArtist = function(artist_obj) {
+		artist_obj = artist_obj || {};
+		localStorage.setItem('_artist_', JSON.stringify(artist_obj));
+	}
+	// 获取艺术家
+	owner.getArtist = function() {
+		var artist_obj = localStorage.getItem('_artist_') || "{}";
+		return JSON.parse(artist_obj);
 	}
 
 	//发布新任务

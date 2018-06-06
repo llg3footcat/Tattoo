@@ -1,27 +1,45 @@
 {
-  "login.html": {
-    "refer": [
-      "html/main.html"
-    ]
-  },
-  "html/main.html": {
-    "resources": [
-      "html/tabpage/tab_scan.html"
-    ],
-    "refer": [
-      "html/tabpage/tab_mine.html",
-      "html/tabpage/tab_scan.html",
-      "html/tabpage/tab_home.html"
-    ]
-  },
-  "html/tabpage/tab_home.html": {
-    "refer": [
-      "html/record/record.html"
-    ]
-  },
-  "html/record/record.html": {
-    "refer": [
-      "html/record/record_edit.html"
-    ]
-  }
+	"login.html": {
+		"refer": [
+			"html/main.html"
+		]
+	},
+	"html/main.html": {
+		"resources": [
+			"html/tabpage/tab_scan.html",
+			"html/tabpage/tab_home.html"
+		],
+		"refer": [
+			"html/tabpage/tab_mine.html",
+			"html/tabpage/tab_scan.html",
+			"html/tabpage/tab_home.html"
+		]
+	},
+	"html/tabpage/tab_home.html": {
+		"refer": [
+			"html/record/record.html",
+			"html/artist/artist_list.html"
+		]
+	},
+	"html/record/record.html": {
+		"refer": [
+			"html/record/record_edit.html"
+		]
+	},
+	"html/tabpage/tab_mine.html": {
+		"refer": [
+			"html/mine/my_waveform.html",
+			"html/mine/my_order.html"
+		]
+	},
+	"html/artist/artist_list.html": {
+		"refer": [
+			"html/artist/artist_detail.html"
+		]
+	},
+	"html/mine/my_order.html": {
+		"refer": [
+			"html/mine/my_upload.html"
+		]
+	}
 }
